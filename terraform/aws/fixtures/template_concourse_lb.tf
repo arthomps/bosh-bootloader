@@ -734,75 +734,81 @@ resource "aws_security_group" "concourse_lb_internal_security_group" {
 }
 
 output "concourse_lb_internal_security_group" {
-  value="${aws_security_group.concourse_lb_internal_security_group.id}"
+  value = "${aws_security_group.concourse_lb_internal_security_group.id}"
 }
 
-resource "aws_elb" "concourse_lb" {
-  name                      = "${var.short_env_id}-concourse-lb"
-  cross_zone_load_balancing = true
+resource "aws_lb" "concourse_lb" {
+  name               = "${var.short_env_id}-concourse-lb"
+  load_balancer_type = "network"
+  security_groups    = ["${aws_security_group.concourse_lb_security_group.id}"]
+  subnets            = ["${aws_subnet.lb_subnets.*.id}"]
+}
+
+resource  "aws_lb_listener" "concourse_lb_80" {
+  load_balancer_arn = "${aws_lb.concourse_lb.arn}"
+  protocol          = "tcp"
+  port              = 80
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.concourse_lb_80.arn}"
+  }
+}
+
+resource "aws_lb_target_group" "concourse_lb_80" {
+  name     = "${var.short_env_id}-concourse-lb-80-8080"
+  port     = 8080
+  protocol = "tcp"
+  vpc_id   = "${aws_vpc.vpc.id}"
 
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 10
     interval            = 30
-    target              = "TCP:8080"
     timeout             = 5
   }
+}
 
-  listener {
-    instance_port     = 8080
-    instance_protocol = "tcp"
-    lb_port           = 80
-    lb_protocol       = "tcp"
+resource  "aws_lb_listener" "concourse_lb_2222" {
+  load_balancer_arn = "${aws_lb.concourse_lb.arn}"
+  port              = 2222
+  protocol          = "tcp"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.concourse_lb_2222.arn}"
   }
+}
 
-  listener {
-    instance_port      = 2222
-    instance_protocol  = "tcp"
-    lb_port            = 2222
-    lb_protocol        = "tcp"
+resource "aws_lb_target_group" "concourse_lb_2222" {
+  name     = "${var.short_env_id}-concourse-lb-2222-2222"
+  port     = 2222
+  protocol = "tcp"
+  vpc_id   = "${aws_vpc.vpc.id}"
+}
+
+resource  "aws_lb_listener" "concourse_lb_443" {
+  load_balancer_arn = "${aws_lb.concourse_lb.arn}"
+  port              = 443
+  protocol          = "tcp"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.concourse_lb_443.arn}"
   }
+}
 
-  listener {
-    instance_port      = 8080
-    instance_protocol  = "tcp"
-    lb_port            = 443
-    lb_protocol        = "ssl"
-    ssl_certificate_id = "${aws_iam_server_certificate.lb_cert.arn}"
-  }
-
-  security_groups = ["${aws_security_group.concourse_lb_security_group.id}"]
-  subnets         = ["${aws_subnet.lb_subnets.*.id}"]
+resource "aws_lb_target_group" "concourse_lb_443" {
+  name     = "${var.short_env_id}-concourse-lb-443-8080"
+  port     = 8080
+  protocol = "tcp"
+  vpc_id   = "${aws_vpc.vpc.id}"
 }
 
 output "concourse_lb_name" {
-  value = "${aws_elb.concourse_lb.name}"
+  value = "${aws_lb.concourse_lb.name}"
 }
 
 output "concourse_lb_url" {
-  value = "${aws_elb.concourse_lb.dns_name}"
-}
-
-variable "ssl_certificate" {
-  type = "string"
-}
-
-variable "ssl_certificate_chain" {
-  type = "string"
-}
-
-variable "ssl_certificate_private_key" {
-  type = "string"
-}
-
-resource "aws_iam_server_certificate" "lb_cert" {
-  name_prefix = "${var.short_env_id}"
-
-  certificate_body  = "${var.ssl_certificate}"
-  certificate_chain = "${var.ssl_certificate_chain}"
-  private_key       = "${var.ssl_certificate_private_key}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  value = "${aws_lb.concourse_lb.dns_name}"
 }

@@ -95,7 +95,7 @@ var _ = Describe("create-lbs", func() {
 			It("returns an error", func() {
 				certificateValidator.ValidateCall.Returns.Error = errors.New("failed to validate")
 				err := command.CheckFastFails([]string{
-					"--type", "concourse",
+					"--type", "cf",
 					"--cert", "/path/to/cert",
 					"--key", "/path/to/key",
 					"--chain", "/path/to/chain",
@@ -111,15 +111,13 @@ var _ = Describe("create-lbs", func() {
 			})
 		})
 
-		Context("when iaas is gcp and lb type is concourse", func() {
+		Context("when lb type is concourse", func() {
 			It("does not call certificateValidator", func() {
 				_ = command.CheckFastFails(
 					[]string{
 						"--type", "concourse",
 					},
-					storage.State{
-						IAAS: "gcp",
-					})
+					storage.State{IAAS: "aws"})
 
 				Expect(certificateValidator.ValidateCall.CallCount).To(Equal(0))
 			})

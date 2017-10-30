@@ -51,7 +51,7 @@ func (c CreateLBs) CheckFastFails(subcommandFlags []string, state storage.State)
 		return errors.New("--type is required")
 	}
 
-	if !(state.IAAS == "gcp" && getLBType(config) == "concourse") {
+	if getLBType(config) == "cf" {
 		err = c.certificateValidator.Validate("create-lbs", getCertPath(config), getKeyPath(config), getChainPath(config))
 		if err != nil {
 			return fmt.Errorf("Validate certificate: %s", err)

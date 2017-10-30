@@ -197,13 +197,11 @@ var _ = Describe("AWS Create LBs", func() {
 				})
 			})
 
-			Context("when lb type desired is concourse", func() {
+			FContext("when lb type desired is concourse", func() {
 				BeforeEach(func() {
 					statePassedToTerraform = incomingState
 					statePassedToTerraform.LB = storage.LB{
 						Type: "concourse",
-						Cert: "some-cert",
-						Key:  "some-key",
 					}
 
 					stateReturnedFromTerraform = statePassedToTerraform
@@ -215,9 +213,7 @@ var _ = Describe("AWS Create LBs", func() {
 					err := command.Execute(
 						commands.CreateLBsConfig{
 							AWS: commands.AWSCreateLBsConfig{
-								LBType:   "concourse",
-								CertPath: certPath,
-								KeyPath:  keyPath,
+								LBType: "concourse",
 							},
 						},
 						incomingState,
@@ -226,34 +222,6 @@ var _ = Describe("AWS Create LBs", func() {
 
 					Expect(terraformManager.ApplyCall.Receives.BBLState).To(Equal(statePassedToTerraform))
 					Expect(stateStore.SetCall.Receives[1].State).To(Equal(stateReturnedFromTerraform))
-				})
-
-				Context("when optional chain is provided", func() {
-					BeforeEach(func() {
-						statePassedToTerraform.LB.Chain = "some-chain"
-
-						stateReturnedFromTerraform = statePassedToTerraform
-						stateReturnedFromTerraform.TFState = "some-updated-tf-state"
-						terraformManager.ApplyCall.Returns.BBLState = stateReturnedFromTerraform
-					})
-
-					It("creates a load balancer with certificate using terraform", func() {
-						err := command.Execute(
-							commands.CreateLBsConfig{
-								AWS: commands.AWSCreateLBsConfig{
-									LBType:    "concourse",
-									CertPath:  certPath,
-									KeyPath:   keyPath,
-									ChainPath: chainPath,
-								},
-							},
-							incomingState,
-						)
-						Expect(err).NotTo(HaveOccurred())
-
-						Expect(terraformManager.ApplyCall.Receives.BBLState).To(Equal(statePassedToTerraform))
-						Expect(stateStore.SetCall.Receives[1].State).To(Equal(stateReturnedFromTerraform))
-					})
 				})
 			})
 		})

@@ -151,10 +151,7 @@ var _ = Describe("InputGenerator", func() {
 					Region:          "some-region",
 				},
 				LB: storage.LB{
-					Type:  "concourse",
-					Cert:  "some-cert",
-					Chain: "some-chain",
-					Key:   "some-key",
+					Type: "concourse",
 				},
 			}
 		})
@@ -166,16 +163,13 @@ var _ = Describe("InputGenerator", func() {
 			Expect(availabilityZoneRetriever.RetrieveAvailabilityZonesCall.Receives.Region).To(Equal("some-region"))
 
 			Expect(inputs).To(Equal(map[string]string{
-				"env_id":                      "some-env-id",
-				"short_env_id":                "some-env-id",
-				"access_key":                  "some-access-key-id",
-				"secret_key":                  "some-secret-access-key",
-				"region":                      "some-region",
-				"bosh_availability_zone":      "",
-				"availability_zones":          `["z1","z2","z3"]`,
-				"ssl_certificate":             "some-cert",
-				"ssl_certificate_chain":       "some-chain",
-				"ssl_certificate_private_key": "some-key",
+				"env_id":                 "some-env-id",
+				"short_env_id":           "some-env-id",
+				"access_key":             "some-access-key-id",
+				"secret_key":             "some-secret-access-key",
+				"region":                 "some-region",
+				"bosh_availability_zone": "",
+				"availability_zones":     `["z1","z2","z3"]`,
 			}))
 		})
 	})

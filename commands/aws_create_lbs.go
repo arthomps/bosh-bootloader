@@ -51,26 +51,28 @@ func (c AWSCreateLBs) Execute(config CreateLBsConfig, state storage.State) error
 		return err
 	}
 
-	certContents, err := ioutil.ReadFile(config.AWS.CertPath)
-	if err != nil {
-		return err
-	}
-
-	keyContents, err := ioutil.ReadFile(config.AWS.KeyPath)
-	if err != nil {
-		return err
-	}
-
-	state.LB.Cert = string(certContents)
-	state.LB.Key = string(keyContents)
-
-	if config.AWS.ChainPath != "" {
-		chainContents, err := ioutil.ReadFile(config.AWS.ChainPath)
+	if state.LB.Type == "cf" {
+		certContents, err := ioutil.ReadFile(config.AWS.CertPath)
 		if err != nil {
 			return err
 		}
 
-		state.LB.Chain = string(chainContents)
+		keyContents, err := ioutil.ReadFile(config.AWS.KeyPath)
+		if err != nil {
+			return err
+		}
+
+		state.LB.Cert = string(certContents)
+		state.LB.Key = string(keyContents)
+
+		if config.AWS.ChainPath != "" {
+			chainContents, err := ioutil.ReadFile(config.AWS.ChainPath)
+			if err != nil {
+				return err
+			}
+
+			state.LB.Chain = string(chainContents)
+		}
 	}
 
 	if config.AWS.Domain != "" {
@@ -87,6 +89,7 @@ func (c AWSCreateLBs) Execute(config CreateLBsConfig, state storage.State) error
 		return err
 	}
 
+	var err error
 	state, err = c.terraformManager.Apply(state)
 	if err != nil {
 		return handleTerraformError(err, c.stateStore)
