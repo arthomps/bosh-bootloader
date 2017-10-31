@@ -25,8 +25,10 @@ type terraformOutputter interface {
 }
 
 type boshManager interface {
+	IsDirectorInitialized() bool
 	InitializeDirector(bblState storage.State, terraformOutputs terraform.Outputs) error
 	CreateDirector(bblState storage.State) (storage.State, error)
+	IsJumpboxInitialized() bool
 	InitializeJumpbox(bblState storage.State, terraformOutputs terraform.Outputs) error
 	CreateJumpbox(bblState storage.State, jumpboxURL string) (storage.State, error)
 	DeleteDirector(bblState storage.State, terraformOutputs terraform.Outputs) error

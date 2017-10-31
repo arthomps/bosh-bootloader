@@ -6,6 +6,12 @@ import (
 )
 
 type BOSHManager struct {
+	IsJumpboxInitializedCall struct {
+		CallCount int
+		Returns   struct {
+			IsInitialized bool
+		}
+	}
 	InitializeJumpboxCall struct {
 		CallCount int
 		Receives  struct {
@@ -25,6 +31,12 @@ type BOSHManager struct {
 		Returns struct {
 			State storage.State
 			Error error
+		}
+	}
+	IsDirectorInitializedCall struct {
+		CallCount int
+		Returns   struct {
+			IsInitialized bool
 		}
 	}
 	InitializeDirectorCall struct {
@@ -96,6 +108,11 @@ type BOSHManager struct {
 	}
 }
 
+func (b *BOSHManager) IsJumpboxInitialized() bool {
+	b.IsJumpboxInitializedCall.CallCount++
+	return b.IsJumpboxInitializedCall.Returns.IsInitialized
+}
+
 func (b *BOSHManager) InitializeJumpbox(state storage.State, terraformOutputs terraform.Outputs) error {
 	b.InitializeJumpboxCall.CallCount++
 	b.InitializeJumpboxCall.Receives.State = state
@@ -108,6 +125,11 @@ func (b *BOSHManager) CreateJumpbox(state storage.State, jumpboxURL string) (sto
 	b.CreateJumpboxCall.Receives.State = state
 	b.CreateJumpboxCall.Receives.JumpboxURL = jumpboxURL
 	return b.CreateJumpboxCall.Returns.State, b.CreateJumpboxCall.Returns.Error
+}
+
+func (b *BOSHManager) IsDirectorInitialized() bool {
+	b.IsDirectorInitializedCall.CallCount++
+	return b.IsDirectorInitializedCall.Returns.IsInitialized
 }
 
 func (b *BOSHManager) InitializeDirector(state storage.State, terraformOutputs terraform.Outputs) error {

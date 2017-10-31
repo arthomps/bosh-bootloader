@@ -67,6 +67,24 @@ director_ssl:
 	AfterEach(func() {
 		bosh.ResetOSSetenv()
 	})
+
+	Describe("IsDirectorInitialized", func() {
+		Context("when director deployment files are all missing", func() {
+			It("returns false", func() {
+				Expect(boshManager.IsDirectorInitialized()).To(BeFalse())
+			})
+		})
+
+		Context("when director deployment files are all present", func() {
+			It("returns true", func() {
+				Expect(boshManager.IsDirectorInitialized()).To(BeTrue())
+			})
+		})
+	})
+
+	Describe("IsJumpboxInitialized", func() {
+	})
+
 	Describe("Director set-up", func() {
 		var state storage.State
 		BeforeEach(func() {

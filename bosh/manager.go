@@ -228,6 +228,10 @@ func (m *Manager) CreateJumpbox(state storage.State, jumpboxURL string) (storage
 	return state, nil
 }
 
+func (m *Manager) IsDirectorInitialized() bool {
+	return false
+}
+
 func (m *Manager) InitializeDirector(state storage.State, terraformOutputs terraform.Outputs) error {
 	varsDir, err := m.stateStore.GetVarsDir()
 	if err != nil {
