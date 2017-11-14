@@ -103,15 +103,26 @@ var _ = Describe("Executor", func() {
 
 			By("writing the create-env args to a shell script", func() {
 				expectedScript := formatScript("create-env", stateDir, expectedArgs)
-				shellScript, err := ioutil.ReadFile(fmt.Sprintf("%s/create-jumpbox.sh", stateDir))
+				scriptPath := fmt.Sprintf("%s/create-jumpbox.sh", stateDir)
+				shellScript, err := ioutil.ReadFile(scriptPath)
 				Expect(err).NotTo(HaveOccurred())
+
+				fileinfo, err := os.Stat(scriptPath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(fileinfo.Mode().String()).To(Equal("-rwxr-x---"))
 
 				Expect(string(shellScript)).To(Equal(expectedScript))
 			})
 
 			By("writing the delete-env args to a shell script", func() {
 				expectedScript := formatScript("delete-env", stateDir, expectedArgs)
-				shellScript, err := ioutil.ReadFile(fmt.Sprintf("%s/delete-jumpbox.sh", stateDir))
+				scriptPath := fmt.Sprintf("%s/delete-jumpbox.sh", stateDir)
+				shellScript, err := ioutil.ReadFile(scriptPath)
+				Expect(err).NotTo(HaveOccurred())
+
+				fileinfo, err := os.Stat(scriptPath)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(fileinfo.Mode().String()).To(Equal("-rwxr-x---"))
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(string(shellScript)).To(Equal(expectedScript))
@@ -217,7 +228,13 @@ var _ = Describe("Executor", func() {
 
 				By("writing the create-env args to a shell script", func() {
 					expectedScript := formatScript("create-env", stateDir, expectedArgs)
-					shellScript, err := ioutil.ReadFile(fmt.Sprintf("%s/create-director.sh", stateDir))
+					scriptPath := fmt.Sprintf("%s/create-director.sh", stateDir)
+					shellScript, err := ioutil.ReadFile(scriptPath)
+					Expect(err).NotTo(HaveOccurred())
+
+					fileinfo, err := os.Stat(scriptPath)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(fileinfo.Mode().String()).To(Equal("-rwxr-x---"))
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(string(shellScript)).To(Equal(expectedScript))
@@ -225,7 +242,14 @@ var _ = Describe("Executor", func() {
 
 				By("writing the delete-env args to a shell script", func() {
 					expectedScript := formatScript("delete-env", stateDir, expectedArgs)
-					shellScript, err := ioutil.ReadFile(fmt.Sprintf("%s/delete-director.sh", stateDir))
+					scriptPath := fmt.Sprintf("%s/delete-director.sh", stateDir)
+					shellScript, err := ioutil.ReadFile(scriptPath)
+					Expect(err).NotTo(HaveOccurred())
+
+					fileinfo, err := os.Stat(scriptPath)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(fileinfo.Mode().String()).To(Equal("-rwxr-x---"))
+					Expect(err).NotTo(HaveOccurred())
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(string(shellScript)).To(Equal(expectedScript))

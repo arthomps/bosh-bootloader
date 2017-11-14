@@ -139,14 +139,14 @@ func (e Executor) JumpboxCreateEnvArgs(input InterpolateInput) error {
 
 	createEnvCmd := []byte(formatScript(boshPath, input.StateDir, "create-env", boshArgs))
 	createJumpboxScript := filepath.Join(input.StateDir, "create-jumpbox.sh")
-	err = e.writeFile(createJumpboxScript, createEnvCmd, os.ModePerm)
+	err = e.writeFile(createJumpboxScript, createEnvCmd, 0750)
 	if err != nil {
 		return err
 	}
 
 	deleteEnvCmd := []byte(formatScript(boshPath, input.StateDir, "delete-env", boshArgs))
 	deleteJumpboxScript := filepath.Join(input.StateDir, "delete-jumpbox.sh")
-	err = e.writeFile(deleteJumpboxScript, deleteEnvCmd, os.ModePerm)
+	err = e.writeFile(deleteJumpboxScript, deleteEnvCmd, 0750)
 	if err != nil {
 		return err
 	}
@@ -259,13 +259,13 @@ func (e Executor) DirectorCreateEnvArgs(input InterpolateInput) error {
 	}, sharedArgs...)
 
 	createEnvCmd := []byte(formatScript(boshPath, input.StateDir, "create-env", boshArgs))
-	err = e.writeFile(filepath.Join(input.StateDir, "create-director.sh"), createEnvCmd, os.ModePerm)
+	err = e.writeFile(filepath.Join(input.StateDir, "create-director.sh"), createEnvCmd, 0750)
 	if err != nil {
 		return err
 	}
 
 	deleteEnvCmd := []byte(formatScript(boshPath, input.StateDir, "delete-env", boshArgs))
-	err = e.writeFile(filepath.Join(input.StateDir, "delete-director.sh"), deleteEnvCmd, os.ModePerm)
+	err = e.writeFile(filepath.Join(input.StateDir, "delete-director.sh"), deleteEnvCmd, 0750)
 	if err != nil {
 		return err
 	}

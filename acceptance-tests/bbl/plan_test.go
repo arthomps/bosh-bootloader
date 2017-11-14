@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	acceptance "github.com/cloudfoundry/bosh-bootloader/acceptance-tests"
@@ -58,8 +59,13 @@ var _ = Describe("plan", func() {
 
 		By("verifying that artifacts are created in state dir", func() {
 			for _, f := range expectedArtifacts {
-				_, err := os.Stat(f)
+				fileinfo, err := os.Stat(f)
 				Expect(err).NotTo(HaveOccurred())
+				if strings.HasSuffix(f, ".sh") {
+					Expect(fileinfo.Mode().String()).To(Equal("-rwxr-x---"))
+				} else {
+					Expect(fileinfo.Mode().String()).To(Equal("-rwxr-----"))
+				}
 			}
 		})
 
